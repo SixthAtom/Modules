@@ -11,9 +11,9 @@ m.new = function(mass, stiff, damp, speed)
 	spring.damp		= damp
 	spring.speed	= speed
 	
-	spring.vel		= 0
-	spring.pos		= 0
-	spring.tpos		= 0
+	spring.vel		= Vector3.new()
+	spring.pos		= Vector3.new()
+	spring.tpos		= Vector3.new()
 	
 	return setmetatable(spring, m)
 end
@@ -21,7 +21,8 @@ end
 
 
 m.update = function(spring, dT)
-	if spring.vel <= 0.001 then return spring.pos end
+	--if spring.vel.Magnitude <= 0.001 then return spring.pos end
+	dT 					= math.min(0.1, dT) * spring.speed
 	
 	local dx			= spring.tpos - spring.pos
 	local force			= spring.stiff * dx
