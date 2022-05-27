@@ -1,24 +1,24 @@
-local m 		    = {}
-m.__index		    = m
-m.retryInterval	= 5
+local m 		= {}
+m.__index		= m
+m.retryInterval		= 5
 
 
 
-local ser 		  = {}
-ser.tps			    = game:GetService("TeleportService")
-ser.plrs		    = game:GetService("Players")
+local ser 		 = {}
+ser.tps			 = game:GetService("TeleportService")
+ser.plrs		 = game:GetService("Players")
 
 
 
 m.create = function( placeID, serverData )
 	
-	local server 	    = {}
+	local server 	  = {}
 	server.placeID	  = placeID
-	server.data		    = serverData
+	server.data	  = serverData
 	
 	local code, id	  = ser.tps:ReserveServer(placeID)
 	server.joinCode	  = code
-	server.joinID	    = id
+	server.joinID	  = id
 	
 	return setmetatable(server, m)
 	
