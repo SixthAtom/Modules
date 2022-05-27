@@ -1,6 +1,6 @@
 local m				= {}
 m.__index			= m
-m.retryInterval			= 5
+m.retryInterval		= 5
 
 
 
@@ -14,7 +14,7 @@ m.create = function( placeID, serverData )
 
 	local server		= {}
 	server.placeID		= placeID
-	server.data		= serverData
+	server.data			= serverData
 
 	local code, id		= ser.tps:ReserveServer(placeID)
 	server.joinCode		= code
