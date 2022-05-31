@@ -15,6 +15,8 @@ m.__index			= m
 m.refreshSpeed		= .5
 m.scanSpeed			= .1
 
+
+
 local monsters		= {}
 
 
@@ -57,6 +59,7 @@ m.new = function( object, paths, agent)
 	ai.idlepath			= nil
 	ai.pindex			= nil
 	ai.iindex			= nil -- idle index, when this number is reached the AI no longer is "walkingtoidle"
+	ai.nopaths			= 0
 	
 	ai.target			= nil
 	ai.lasttargetpos	= nil
@@ -139,7 +142,8 @@ m.compilePaths = function(ai)
 					local waypoints = p:GetWaypoints()
 					
 					for x = 1, #waypoints do
-						compiled[i + x - 2] = waypoints[x]
+						--compiled[i + x - 2] = waypoints[x]
+						table.insert(compiled, waypoints[x])
 					end
 					
 					--compiled[i-1] = p
@@ -279,16 +283,33 @@ coroutine.wrap(function()
 					local s, e = pcall(function()
 						path:ComputeAsync( ai.object.PrimaryPart.Position, ai.path[ai.pindex].Position )
 					end)
+					
+					if not s or path.Status ~= Enum.PathStatus.Success then
+						warn(ai.path, ai.pindex, #ai.path)
+					end
 
-					print(s, e)
+					print(s, e, path.Status)
 					if s and path.Status == Enum.PathStatus.Success then
 						ai.idlepath 	= {}
 						ai.iindex 		= 1
+						ai.nopaths 		= 0
 						
 						local wps = path:GetWaypoints()
 
 						for _, wp in ipairs(path:GetWaypoints()) do
 							table.insert(ai.idlepath, wp)
+						end
+					elseif path.Status == Enum.PathStatus.NoPath then
+						ai.nopaths += 1
+						if ai.nopaths >= 5 then
+							if ai.path then
+								if ai.pindex == #ai.path then
+									ai.path = nil
+								else
+									ai.object:SetPrimaryPartCFrame( CFrame.new(ai.path[ai.pindex].Position) )
+									ai.nopaths = 0
+								end
+							end
 						end
 					end
 					
@@ -353,7 +374,7 @@ coroutine.wrap(function()
 				
 				
 				if ai.lastobjectpos then
-					if mod.essentials.inrange( ai.object.PrimaryPart.Position, ai.lastobjectpos, 1, true ) then
+					if mod.essentials.inrange( ai.object.PrimaryPart.Position, ai.lastobjectpos, .5, true ) then
 						ai.target, ai.idle, ai.chase, ai.lasttargetpos = nil, false, false, nil
 					end
 				end
