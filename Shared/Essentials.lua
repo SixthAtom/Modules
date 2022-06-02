@@ -2,7 +2,7 @@ local m = {}
 
 m.weld = function(model, p0)
 	if not p0 then p0 = model.PrimaryPart or nil end
-	assert(p0 ~= nil, 'Nigger')
+	assert(p0 ~= nil, 'No P0')
 	
 	local welds = {}
 	for _, p in ipairs(model:GetDescendants()) do
